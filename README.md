@@ -1,2 +1,2 @@
 # dlcsync
-DLC files downloader for TSTO, by schdub, converted for Python 3.
+DLC files downloader for TSTO, original by schdub, converted for Python 3.
