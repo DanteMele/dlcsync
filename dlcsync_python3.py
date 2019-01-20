@@ -2,7 +2,7 @@
 
 import xml.etree.ElementTree as ET
 import binascii
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import zipfile
 import io
 import os
@@ -24,7 +24,7 @@ def crc32ForFile(filename):
 		return "%d" % buf
 
 def getZippedXml(url):
-	r = urllib2.urlopen(url)
+	r = urllib.request.urlopen(url)
 	data = r.read()
 	r.close()
 	LOG("downloaded %d bytes" % len(data))
@@ -40,7 +40,7 @@ def getDlcIndex():
 
 def getRest(dlFile, fromUrl):
 	existSize = 0
-	req = urllib2.Request(fromUrl)
+	req = urllib.request.Request(fromUrl)
 	if os.path.exists(dlFile):
 		outputFile = open(dlFile, "ab")
 		existSize = os.path.getsize(dlFile)
@@ -48,9 +48,9 @@ def getRest(dlFile, fromUrl):
 		req.headers['Range'] = 'bytes=%s-' % (existSize)
 	else:
 		outputFile = open(dlFile,"wb")
-	webPage = urllib2.urlopen(req)
+	webPage = urllib.request.urlopen(req)
 	if verbose:
-		for k, v in webPage.headers.items():
+		for k, v in list(webPage.headers.items()):
 			LOG("%s=%s" % (k, v))
 	# if we already have the whole file, there is no need to download it again
 	ok = False
@@ -134,7 +134,7 @@ class DlcIndexParser:
 					crc32 = crc32ForFile(zeroFile)
 					need2Download = crc32 != self.IndexFileCRC
 					if need2Download:
-						print("crc mismatch actual=%s expected=%s." % (crc32, self.IndexFileCRC))
+						print(("crc mismatch actual=%s expected=%s." % (crc32, self.IndexFileCRC)))
 				# now download it
 				if need2Download:
 					doDownload(fn)
